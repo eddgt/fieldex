@@ -1,0 +1,131 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Role {
+  ADMIN
+  TECHNICIAN
+}
+
+enum Industry {
+  TRITURADORA
+  BANDA_TRANSPORTE
+  PLANTA_ASFALTO
+  PLANTA_CEMENTO
+  MOLINO_HARINA
+  OTRO
+}
+
+enum VisitStatus {
+  PENDIENTE
+  EN_PROGRESO
+  COMPLETADA
+}
+
+enum Severity {
+  CRITICO
+  ALTO
+  MEDIO
+  BAJO
+}
+
+enum ComponentStatus {
+  POR_COTIZAR
+  COTIZADO
+  APROBADO
+  INSTALADO
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      Role     @default(TECHNICIAN)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  visits Visit[] @relation("TechnicianVisits")
+}
+
+model Client {
+  id              String   @id @default(cuid())
+  nombre_empresa  String
+  contacto_nombre String
+  contacto_email  String
+  telefono        String?
+  direccion       String?
+  industria       Industry @default(OTRO)
+  activo          Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  visits Visit[]
+}
+
+model Visit {
+  id           String      @id @default(cuid())
+  client       Client      @relation(fields: [clientId], references: [id])
+  clientId     String
+  technician   User        @relation("TechnicianVisits", fields: [technicianId], references: [id])
+  technicianId String
+  fecha        DateTime
+  descripcion  String?
+  status       VisitStatus @default(PENDIENTE)
+  lat          Float?
+  lng          Float?
+
+  problema_descripcion String?
+  tipo_equipo          String?
+  severidad            Severity?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  photos     Photo[]
+  components Component[]
+  emailLogs  EmailLog[]
+}
+
+model Photo {
+  id        String   @id @default(cuid())
+  visit     Visit    @relation(fields: [visitId], references: [id], onDelete: Cascade)
+  visitId   String
+  url       String
+  lat       Float?
+  lng       Float?
+  timestamp DateTime @default(now())
+  createdAt DateTime @default(now())
+}
+
+model Component {
+  id                String          @id @default(cuid())
+  visit             Visit           @relation(fields: [visitId], references: [id], onDelete: Cascade)
+  visitId           String
+  nombre            String
+  codigo_referencia String?
+  cantidad          Int             @default(1)
+  urgencia          Severity        @default(MEDIO)
+  estado            ComponentStatus @default(POR_COTIZAR)
+  observacion       String?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+}
+
+model EmailLog {
+  id        String   @id @default(cuid())
+  visit     Visit    @relation(fields: [visitId], references: [id])
+  visitId   String
+  type      String   @default("REPORT")
+  sentAt    DateTime @default(now())
+  recipient String
+  status    String
+  error     String?
+}

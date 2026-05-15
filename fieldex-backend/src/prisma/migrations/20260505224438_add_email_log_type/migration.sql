@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "EmailLog" ADD COLUMN     "type" TEXT NOT NULL DEFAULT 'REPORT';

@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+
+# Environment variables — NEVER subir al repo
+.env
+.env.local
+.env.*.local
+
+# Prisma generated client
+src/prisma/generated/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
