@@ -3,10 +3,12 @@ const jwt = require('jsonwebtoken');
 const { z } = require('zod');
 const prisma = require('../prisma/client');
 
+const isProd = process.env.NODE_ENV === 'production';
 const COOKIE_OPTS = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
-  sameSite: 'strict',
+  secure: isProd,
+  // cross-domain en producción (vercel.app ≠ railway.app) requiere none + secure
+  sameSite: isProd ? 'none' : 'strict',
   maxAge: 7 * 24 * 60 * 60 * 1000, // 7d
 };
 
@@ -60,13 +62,13 @@ async function refresh(req, res, next) {
     const accessToken = signAccess({ id: payload.id, role: payload.role });
     res.json({ success: true, data: { accessToken } });
   } catch {
-    res.clearCookie('refreshToken');
+    res.clearCookie('refreshToken', COOKIE_OPTS);
     return res.status(401).json({ success: false, error: 'Refresh token inválido' });
   }
 }
 
 function logout(_req, res) {
-  res.clearCookie('refreshToken');
+  res.clearCookie('refreshToken', COOKIE_OPTS);
   res.json({ success: true });
 }
 
