@@ -37,12 +37,22 @@ export default function BottomNav() {
             key={to}
             to={to}
             className={({ isActive }) =>
-              `flex-1 flex flex-col items-center gap-1 py-2 text-xs font-medium transition-colors
-               ${isActive ? 'text-primary' : 'text-slate-400'}`
+              `flex-1 flex flex-col items-center gap-1 py-2 text-xs font-medium
+               transition-all duration-150 active:scale-90
+               ${isActive ? 'text-primary' : 'text-slate-400 hover:text-slate-600'}`
             }
           >
-            {icon}
-            {label}
+            {({ isActive }) => (
+              <>
+                <span className={`transition-transform duration-150 ${isActive ? 'scale-110' : ''}`}>
+                  {icon}
+                </span>
+                {label}
+                {isActive && (
+                  <span className="absolute bottom-0 w-8 h-0.5 bg-primary rounded-t-full" />
+                )}
+              </>
+            )}
           </NavLink>
         ))}
       </div>

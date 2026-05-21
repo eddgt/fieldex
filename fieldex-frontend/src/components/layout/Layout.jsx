@@ -20,7 +20,7 @@ export default function Layout() {
       <Sidebar />
       <div className="flex-1 min-w-0 flex flex-col">
         <TopBar title={title} />
-        <main className="flex-1 pb-16 md:pb-0">
+        <main key={pathname} className="flex-1 pb-16 md:pb-0 page-enter">
           <Outlet />
         </main>
       </div>

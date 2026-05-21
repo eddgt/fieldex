@@ -12,6 +12,15 @@
   }
 }
 
+/* Page enter animation */
+@keyframes page-enter {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.page-enter {
+  animation: page-enter 0.18s ease-out both;
+}
+
 /* Leaflet icon fix */
 .leaflet-default-icon-path {
   background-image: url(https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png);
